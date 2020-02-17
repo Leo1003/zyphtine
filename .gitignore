@@ -1,0 +1,15 @@
+# Meson build directory
+build/
+
+# Binary files
+*.o
+*.out
+*.a
+*.so
+*.so.*
+
+# Editor files
+*.swp
+.vscode/
+*.code-workspace
+
