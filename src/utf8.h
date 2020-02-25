@@ -9,12 +9,47 @@
 #include <stdint.h>
 
 /**
- * Return the string length in UTF-8 charactors
+ * Return the string length in charactors
  *
  * @param str valid UTF-8 string
  * @return total charactors in the string
  */
 size_t utf8_strlen(const char *str);
+
+/**
+ * Return the size in bytes of the first charactor
+ * @note if the next charactor is `NUL` (null charactor),
+ * this function would return 0!
+ *
+ * @param str valid UTF-8 string
+ * @return size in bytes
+ */
+static inline size_t utf8_nextchrsize(const char *str)
+{
+    unsigned char cp = *str;
+    if (cp == '\0') {
+        return 0;
+    }
+    if (cp < 0x80) {
+        return 1;
+    } else if (cp >= 0xF0) {
+        return 4;
+    } else if (cp >= 0xE0) {
+        return 3;
+    } else {
+        return 2;
+    }
+}
+
+/**
+ * Return the size in bytes in the given `[start, end)` charactor range
+ *
+ * @param str valid UTF-8 string
+ * @param start the start position in charactors
+ * @param end the end position in charactors
+ * @return total bytes in the range
+ */
+size_t utf8_rangesize(const char *str, size_t start, size_t end);
 
 /**
  * Copy the provided string, but for a given number of charactors
@@ -30,7 +65,7 @@ char *utf8_strncpy(char *dest, const char *src, size_t len);
 /**
  * Get the position of the previous charactor in the string
  *
- * @param p pointer to a valid position in UTF-8 string
+ * @param p a valid and non-first position in UTF-8 string
  * @return position to the previous charactor
  */
 char *utf8_prevchr(const char *p);
@@ -38,7 +73,7 @@ char *utf8_prevchr(const char *p);
 /**
  * Get the position of the next charactor in the string
  *
- * @param p pointer to a valid position in UTF-8 string
+ * @param p a valid position in UTF-8 string
  * @return position to the next charactor
  */
 char *utf8_nextchr(const char *p);
