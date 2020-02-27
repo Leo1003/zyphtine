@@ -5,6 +5,7 @@
  * Provide functions for UTF-8 encoded strings
  */
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
