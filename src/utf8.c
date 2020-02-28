@@ -17,7 +17,7 @@ char *utf8_prevchr(const char *p)
     while ((*p & 0xC0) == 0x80) {
         p--;
     }
-    return p;
+    return (char *)p;
 }
 
 char *utf8_nextchr(const char *p)
@@ -31,7 +31,7 @@ char *utf8_nextchr(const char *p)
 size_t utf8_strlen(const char *str)
 {
     if (!str) {
-        return NULL;
+        return 0;
     }
 
     size_t len = 0;
@@ -117,72 +117,74 @@ char *utf8_reverse(char *str)
 }
 
 // Following RFC 3629 -- Section 4
-static inline int utf8_check_nextchar(const unsigned char *s)
+static inline int utf8_check_nextchar(const char *s)
 {
-    if (BITMASK_EQU(*s, 0x80, 0x00)) {
+    // Convert to unsigned char
+    const unsigned char *p = (const unsigned char *)s;
+    if (BITMASK_EQU(*p, 0x80, 0x00)) {
         /* UTF8-1 (0xxxxxxx) */
         return 1;
-    } else if (BITMASK_EQU(*s, 0xE0, 0xC0)) {
+    } else if (BITMASK_EQU(*p, 0xE0, 0xC0)) {
         /* UTF8-2 (110xxxxx) */
-        if (BITMASK_EQU(*s, 0xFE, 0xC0)) {
+        if (BITMASK_EQU(*p, 0xFE, 0xC0)) {
             /* Overlong encoding (1100000x) */
             return 0;
         } else {
             return 2;
         }
-    } else if (BITMASK_EQU(*s, 0xF0, 0xE0)) {
+    } else if (BITMASK_EQU(*p, 0xF0, 0xE0)) {
         /* UTF8-3 (1110xxxx) */
-        if (*s == 0xE0) {
+        if (*p == 0xE0) {
             /* (101xxxxx) */
-            if (!BITMASK_EQU(*(s + 1), 0xE0, 0xA0)) {
+            if (!BITMASK_EQU(*(p + 1), 0xE0, 0xA0)) {
                 /* Overlong encoding / Invalid continuation byte */
                 return 0;
             }
-        } else if (*s == 0xED) {
+        } else if (*p == 0xED) {
             /* (100xxxxx) */
-            if (!BITMASK_EQU(*(s + 1), 0xE0, 0x80)) {
+            if (!BITMASK_EQU(*(p + 1), 0xE0, 0x80)) {
                 /* Surrogates / Invalid continuation byte */
                 return 0;
             }
         } else {
-            if (!UTF8_IS_CONTIN(*(s + 1))) {
+            if (!UTF8_IS_CONTIN(*(p + 1))) {
                 /* Invalid continuation byte */
                 return 0;
             }
         }
-        if (!UTF8_IS_CONTIN(*(s + 2))) {
+        if (!UTF8_IS_CONTIN(*(p + 2))) {
             /* Invalid continuation byte */
             return 0;
         }
         return 3;
-    } else if (BITMASK_EQU(*s, 0xF8, 0xF0)) {
+    } else if (BITMASK_EQU(*p, 0xF8, 0xF0)) {
         /* UTF8-4 (11110xxx) */
-        if (*s < 0xF5) {
-            if (*s == 0xF0) {
-                if (!UTF8_IS_CONTIN(*(s + 1))) {
+        if (*p < 0xF5) {
+            if (*p == 0xF0) {
+                if (!UTF8_IS_CONTIN(*(p + 1))) {
                     /* Invalid continuation byte */
                     return 0;
                 }
-                if (*(s + 1) < 0x90) {
+                if (*(p + 1) < 0x90) {
                     /* Overlong encoding */
                     return 0;
                 }
-            } else if (*s == 0xF4) {
-                if (!BITMASK_EQU(*(s + 1), 0xF0, 0x80)) {
+            } else if (*p == 0xF4) {
+                if (!BITMASK_EQU(*(p + 1), 0xF0, 0x80)) {
                     /* Out of range / Invalid continuation byte */
                     return 0;
                 }
             } else {
-                if (!UTF8_IS_CONTIN(*(s + 1))) {
+                if (!UTF8_IS_CONTIN(*(p + 1))) {
                     /* Invalid continuation byte */
                     return 0;
                 }
             }
-            if (!UTF8_IS_CONTIN(*(s + 2))) {
+            if (!UTF8_IS_CONTIN(*(p + 2))) {
                 /* Invalid continuation byte */
                 return 0;
             }
-            if (!UTF8_IS_CONTIN(*(s + 3))) {
+            if (!UTF8_IS_CONTIN(*(p + 3))) {
                 /* Invalid continuation byte */
                 return 0;
             }
@@ -191,6 +193,8 @@ static inline int utf8_check_nextchar(const unsigned char *s)
             /* Out of range */
             return 0;
         }
+    } else {
+        return 0;
     }
 }
 
@@ -209,4 +213,42 @@ bool utf8_check(const char *str)
         s += offset;
     }
     return true;
+}
+
+#define STR_APPEND(dest, src, size) \
+    do { \
+        strncpy(dest, src, size); \
+        dest += size; \
+    } while (false)
+
+char *utf8_correct(const char *str)
+{
+    if (!str) {
+        return NULL;
+    }
+
+    size_t sz = strlen(str);
+    char *buf = (char *)malloc(sz * 3 + 1);
+    if (!buf) {
+        return NULL;
+    }
+    char *bufptr = buf;
+
+    const char *p = str;
+    while (*p) {
+        int offset = utf8_check_nextchar(p);
+        if (!offset) {
+            STR_APPEND(bufptr, str, (p - str));
+            STR_APPEND(bufptr, UTF8_REPLACEMENT, strlen(UTF8_REPLACEMENT));
+            p += 1;
+            str = p;
+        } else {
+            p += offset;
+        }
+    }
+
+    STR_APPEND(bufptr, str, (p - str));
+    *bufptr = '\0';
+
+    return buf;
 }
