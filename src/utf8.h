@@ -128,6 +128,7 @@ uint32_t utf8_getchar(const char *str);
 
 /**
  * Get the size of the UTF-8 charactor
+ * @todo unimplemented
  *
  * @param chr A UTF-8 charactor
  * @return size in bytes of the charactor

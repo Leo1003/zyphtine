@@ -252,3 +252,18 @@ char *utf8_correct(const char *str)
 
     return buf;
 }
+
+uint32_t utf8_getchar(const char *str)
+{
+    size_t sz;
+    uint32_t val = 0;
+    if ((sz = utf8_nextchrsize(str))) {
+        const char *p = str;
+        while (--sz) {
+            val |= *p++;
+            val <<= 8;
+        }
+        val |= *p++;
+    }
+    return val;
+}

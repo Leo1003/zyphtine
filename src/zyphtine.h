@@ -14,10 +14,10 @@ struct preedit_char {
     /** @brief The currently selected charactor */
     uint32_t selected_char;
     /** @brief The charactor is selected by user
-        @note The content is still undefined in current development process */
+        @todo The content is still undefined in current development process */
     uint8_t user_selected;
     /** @brief Flag of segmentor
-        @note The content is still undefined in current development process */
+        @todo The content is still undefined in current development process */
     uint8_t seg_point;
 };
 
