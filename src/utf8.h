@@ -124,7 +124,7 @@ char *utf8_correct(const char *str);
  * @param str pointer to a valid position in UTF-8 string
  * @return UTF-8 charactor
  */
-uint32_t utf8_getchar(const char *str);
+uint32_t utf8_getchr(const char *str);
 
 /**
  * Get the size of the UTF-8 charactor
@@ -133,6 +133,6 @@ uint32_t utf8_getchar(const char *str);
  * @param chr A UTF-8 charactor
  * @return size in bytes of the charactor
  */
-size_t utf8_charsize(uint32_t chr);
+size_t utf8_chrsize(uint32_t chr);
 
 #endif

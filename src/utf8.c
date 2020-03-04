@@ -253,7 +253,7 @@ char *utf8_correct(const char *str)
     return buf;
 }
 
-uint32_t utf8_getchar(const char *str)
+uint32_t utf8_getchr(const char *str)
 {
     size_t sz;
     uint32_t val = 0;
