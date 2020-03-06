@@ -80,6 +80,14 @@ char *utf8_prevchr(const char *p);
 char *utf8_nextchr(const char *p);
 
 /**
+ * Get the position of the nth charactor in the string
+ *
+ * @param p a valid position in UTF-8 string
+ * @return position to the next charactor
+ */
+char *utf8_nthchr(const char *p, size_t n);
+
+/**
  * Copy a substring of the given string in the `[start, end)` range bound
  *
  * @param str valid UTF-8 string

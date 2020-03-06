@@ -28,6 +28,18 @@ char *utf8_nextchr(const char *p)
     return (char *)(p + utf8_nextchrsize(p));
 }
 
+char *utf8_nthchr(const char *p, size_t n)
+{
+    if (!p) {
+        return NULL;
+    }
+    char *c = (char *)p;
+    while (n--) {
+        c = utf8_nextchr(c);
+    }
+    return c;
+}
+
 size_t utf8_strlen(const char *str)
 {
     if (!str) {

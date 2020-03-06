@@ -1,5 +1,5 @@
-#ifndef ZYP_PHONE_H
-#define ZYP_PHONE_H
+#ifndef ZYP_SYLLABLE_H
+#define ZYP_SYLLABLE_H
 
 /**
  *  @file
@@ -7,6 +7,7 @@
  *  and some related function
  */
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define ZYP_BOPOMOFO_B      ((uint16_t)1 << 9)  ///< ㄅ
@@ -54,5 +55,93 @@
 #define ZYP_TONE_3          ((uint16_t)3)       ///< ˇ
 #define ZYP_TONE_4          ((uint16_t)4)       ///< ˋ
 #define ZYP_TONE_5          ((uint16_t)5)       ///< ˙
+
+/**
+ * Get the initial(聲母) part of a syllable
+ *
+ * @param syll valid syllable
+ */
+#define ZYP_SYLLABLE_INITIAL(syll) (syll & 0x3F00)
+
+/**
+ * Get the medial(介音) part of a syllable
+ *
+ * @param syll valid syllable
+ */
+#define ZYP_SYLLABLE_MEDIAL(syll) (syll & 0x0180)
+
+/**
+ * Get the rhyme(韻母) part of a syllable
+ *
+ * @param syll valid syllable
+ */
+#define ZYP_SYLLABLE_RHYME(syll) (syll & 0x0078)
+
+/**
+ * Get the tone(聲調) part of a syllable
+ *
+ * @param syll valid syllable
+ */
+#define ZYP_SYLLABLE_TONE(syll) (syll & 0x0007)
+
+/**
+ * Check if the syllable is valid
+ *
+ * @param syll syllable to be verified
+ * @return true if the syllable is valid
+ */
+bool zyp_syllable_check(uint16_t syll);
+
+/**
+ * Check if the syllable is consisted of single symbol
+ *
+ * @param syll valid syllable
+ * @return true if it only contains one bopomofo
+ */
+bool zyp_syllable_is_single(uint16_t syll);
+
+/**
+ * Check if the syllable is a initial(聲母) symbol
+ *
+ * @param syll valid syllable
+ * @return true if it only contains a initial(聲母) symbol
+ */
+bool zyp_syllable_is_initials(uint16_t syll);
+
+/**
+ * Check if the syllable is a medial(介音) symbol
+ *
+ * @param syll valid syllable
+ * @return true if it only contains a medial(介音) symbol
+ */
+bool zyp_syllable_is_medials(uint16_t syll);
+
+/**
+ * Check if the syllable is a rhyme(韻母) symbol
+ *
+ * @param syll valid syllable
+ * @return true if it only contains a rhyme(韻母) symbol
+ */
+bool zyp_syllable_is_rhymes(uint16_t syll);
+
+/**
+ * Check if the syllable is a tone(聲調) symbol
+ *
+ * @param syll valid syllable
+ * @return true if it only contains a tone(聲調) symbol
+ */
+bool zyp_syllable_is_tones(uint16_t syll);
+
+/**
+ * Print the syllable to a UTF-8 string
+ * @note you need to reserve at least 12 bytes(including null charactor)
+ * in the string buffer, or a buffer overflow may occurred!
+ *
+ * @param dest string to be printed
+ * @param syll valid syllable
+ * @retval NULL if the syllable is not valid
+ * @return pointer to the destination(same as dest)
+ */
+char *zyp_syllable_print(char *dest, uint16_t syll);
 
 #endif
