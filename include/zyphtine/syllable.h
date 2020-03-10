@@ -4,7 +4,7 @@
 /**
  *  @file
  *  This header file define the bopomofo symbol used in this library,
- *  and some related function
+ *  and some syllable(音節) related function
  */
 
 #include <stdbool.h>

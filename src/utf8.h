@@ -83,7 +83,7 @@ char *utf8_nextchr(const char *p);
  * Get the position of the nth charactor in the string
  *
  * @param p a valid position in UTF-8 string
- * @return position to the next charactor
+ * @return position to the next nth charactor
  */
 char *utf8_nthchr(const char *p, size_t n);
 
