@@ -21,4 +21,12 @@ struct preedit_char {
     uint8_t seg_point;
 };
 
+/**
+ * @brief The main context object in this library
+ * @todo The context is not completed
+ */
+struct zyphtine_ctx {
+
+};
+
 #endif
