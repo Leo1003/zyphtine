@@ -20,13 +20,6 @@
  * @see zyp_vec_with_capacity()
  */
 struct zyp_vec;
-// TODO: hide the actual definition
-struct zyp_vec {
-    void *buffer;
-    size_t element_size;
-    size_t length;
-    size_t capacity;
-};
 
 /**
  * @brief Create a new vector
@@ -54,29 +47,40 @@ struct zyp_vec *zyp_vec_new(size_t element_size);
 struct zyp_vec *zyp_vec_with_capacity(size_t element_size, size_t capacity);
 
 /**
+ * @brief Free the vector
+ * Free all the memory used by the buffer and the struct itself.
+ * After calling this function, the element in the vector should not be accessed.
+ *
+ * @param vec vector object
+ */
+void zyp_vec_free(struct zyp_vec *vec);
+
+/**
  * @brief Increase the capacity of the vector
  * This function will increase the capacity to the requested size.
  * If the capacity is less than or equal to the current capacity, it will be
- * a no-op, otherwise, the memory will reallocate and copy.
+ * a no-op, otherwise, the memory will be reallocated.
  *
  * @param vec vector object
  * @param capacity capacity in element counts
+ * @return 0 if successful, 1 otherwise
  */
-void zyp_vec_reserve(struct zyp_vec *vec, size_t capacity);
+int zyp_vec_reserve(struct zyp_vec *vec, size_t capacity);
 
 /**
  * @brief Decrease the capacity of the vector
  * This function will decrease the capacity to the requested size.
  * If the capacity is greater than or equal to the current capacity, it will be
  * a no-op.
- * Otherwise, the memory will reallocate and copy.
+ * Otherwise, the memory will be reallocated.
  * @note If the requested size is smaller than the used size, then it will make
  * the capacity to fit the currently hold elements.
  *
  * @param vec vector object
  * @param capacity capacity in element counts
+ * @return 0 if successful, 1 otherwise
  */
-void zyp_vec_shrink(struct zyp_vec *vec, size_t capacity);
+int zyp_vec_shrink(struct zyp_vec *vec, size_t capacity);
 
 /**
  * @brief Get the element count of the vector
